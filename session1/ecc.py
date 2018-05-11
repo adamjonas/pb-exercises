@@ -28,28 +28,34 @@ class FieldElement:
         if self.prime != other.prime:
             raise RuntimeError('Primes must be the same')
         # self.num and other.num are the actual values
+        num = (self.num + other.num) % self.prime
         # self.prime is what you'll need to mod against
+        prime = self.prime
         # You need to return an element of the same class
         # use: self.__class__(num, prime)
-        raise NotImplementedError
+        return self.__class__(num, prime)
 
     def __sub__(self, other):
         if self.prime != other.prime:
             raise RuntimeError('Primes must be the same')
         # self.num and other.num are the actual values
+        num = (self.num - other.num) % self.prime
         # self.prime is what you'll need to mod against
+        prime = self.prime
         # You need to return an element of the same class
         # use: self.__class__(num, prime)
-        raise NotImplementedError
+        return self.__class__(num, prime)
 
     def __mul__(self, other):
         if self.prime != other.prime:
             raise RuntimeError('Primes must be the same')
         # self.num and other.num are the actual values
+        number = (self.num * other.num) % self.prime
+        prime = self.prime
         # self.prime is what you'll need to mod against
         # You need to return an element of the same class
         # use: self.__class__(num, prime)
-        raise NotImplementedError
+        return self.__class__(number, prime)
 
     def __pow__(self, n):
         # remember fermat's little theorem:
@@ -123,8 +129,11 @@ class Point:
         # Exercise 5.1: x being None and y being None represents the point at infinity
         # Exercise 5.1: Check for that here since the equation below won't make sense
         # Exercise 5.1: with None values for both.
+        if x is None and y is None:
+            return
         # Exercise 4.2: make sure that the elliptic curve equation is satisfied
-        # y**2 == x**3 + a*x + b
+        if y**2 != x**3 + a*x + b:
+            raise RuntimeError
         # if not, throw a RuntimeError
 
     def __eq__(self, other):
@@ -145,12 +154,18 @@ class Point:
         if self.a != other.a or self.b != other.b:
             raise RuntimeError('Points {}, {} are not on the same curve'.format(self, other))
         # Case 0.0: self is the point at infinity, return other
+        if self.x is None:
+            return other
         # Case 0.1: other is the point at infinity, return self
+        if other.x is None:
+            return self
 
         # Case 1: self.x == other.x, self.y != other.y
+        if self.x == other.x and self.y != other.y:
         # Result is point at infinity
         # Remember to return an instance of this class:
         # self.__class__(x, y, a, b)
+            return self._class_(None, None, self.a, self.b)
  
         # Case 2: self.x != other.x
         # Formula (x3,y3)==(x1,y1)+(x2,y2)
@@ -167,7 +182,6 @@ class Point:
         # y3=s*(x1-x3)-y1
         # Remember to return an instance of this class:
         # self.__class__(x, y, a, b)
-        raise NotImplementedError
 
 
 class PointTest(TestCase):
